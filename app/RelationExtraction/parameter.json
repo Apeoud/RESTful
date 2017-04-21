@@ -1,0 +1,91 @@
+{
+    "relationship": {
+        "e1_type": "ORG",
+        "e2_type": "LOC",
+        "name": "be headquartered",
+        "positive_seed": [
+            [
+                "Citibank",
+                "Athens"
+            ],
+            [
+                "Nokia",
+                "Espoo"
+            ],
+            [
+                "Motorola",
+                "Schaumburg"
+            ],
+            [
+                "Pfizer",
+                "New York"
+            ],
+            [
+                "Microsoft",
+                "Redmond"
+            ]
+        ],
+        "negative_seed": [
+            [
+                "Daiwa Bank Holdings Inc.",
+                "Osaka"
+            ],
+            [
+                "Adelphia",
+                "Coudersport"
+            ]
+        ]
+    },
+    "hyper_parameters": {
+        "max_tokens_away": 6,
+        "min_tokens_away": 1,
+        "context_window_size": 2,
+        "tag_type": "simple",
+        "wUpdt": 0.5,
+        "wUnk": 0.0,
+        "wNeg": 2,
+        "min_pattern_support": 2,
+        "word2vec_path": "afp_apw_xin_embeddings.bin",
+        "number_iterations": 1
+    },
+    "filter_pos": [
+        "JJ",
+        "JJR",
+        "JJS",
+        "RB",
+        "RBR",
+        "RBS",
+        "WRB"
+    ],
+    "re": {
+        "regex_clean_simple": "</?[A-Z]+>",
+        "regex_clean_linked": "</[A-Z]+>|<[A-Z]+ url=[^>]+>",
+        "regex_simple": "<[A-Z]+>[^<]+</[A-Z]+>",
+        "regex_linked": "<[A-Z]+ url=[^>]+>[^<]+</[A-Z]+>",
+        "tags_regex": "</?[A-Z]+>",
+        "regex_entity_text_simple": "<[A-Z]+>([^<]+)</[A-Z]+>",
+        "regex_entity_type": "<([A-Z]+)",
+        "regex_entity_text_linked": "<[A-Z]+ url=[^>]+>([^<]+)</[A-Z]+>"
+    },
+    "entity_types": {
+        "ORG": 3,
+        "LOC": 4,
+        "PER": 5
+    },
+    "context_weight": {
+        "alpha": 0,
+        "beta": 0.9,
+        "gamma": 0.1
+    },
+    "similarity": {
+        "similarity": 0.9,
+        "confidence": 0.7
+    },
+    "path" :{
+        "dirpath" : "/data/",
+        "word2vec" : "afp_apw_xin_embeddings.bin",
+        "sentences" : "sentences.txt",
+        "processed_tuples" : "processed_tuples.json"
+        
+    }
+}
