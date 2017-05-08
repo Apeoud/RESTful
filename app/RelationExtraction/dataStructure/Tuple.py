@@ -8,7 +8,7 @@ class Tuple(object):
     bet_vector = None
     aft_vector = None
 
-    def __init__(self, _sentence, _e1, _e2, _before, _between, _after, config, toVector=False):
+    def __init__(self, _sentence, _e1, _e2, _before, _between, _after, config, toVector=False, language="en"):
         self.sentence = _sentence
 
         self.e1 = _e1
@@ -28,7 +28,7 @@ class Tuple(object):
 
         # vector是一定维度的用来表示词语义的向量
         if toVector:
-            self.construct_vector(config)
+            self.construct_vector(config, language)
         return
 
     def toJson(self):
@@ -43,9 +43,11 @@ class Tuple(object):
             'aft_tags': self.aft_tags,
         }
 
+    def __unicode__(self):
+        return self.e1 + u'\t' + self.e2
+
     def __str__(self):
-        return str(self.e1 + '\t' +
-                   self.e2 + '\t' + self.bef_words + '\t' + self.bet_words + '\t' + self.aft_words).encode("utf8")
+        return unicode(self).encode('utf-8')
 
     def __hash__(self):
         return hash(self.e1) ^ hash(self.e2) ^ hash(self.bef_words) ^ \
@@ -65,10 +67,10 @@ class Tuple(object):
         else:
             return 0
 
-    def construct_vector(self, config):
+    def construct_vector(self, config, language="en"):
         """
         
-         
+        :param language: 
         :param config: 
         :return: 
         """
@@ -78,28 +80,40 @@ class Tuple(object):
         bet_filtered = [token for token, tag in bet_words if
                         token.lower() not in config.stopwords and tag not in config.filter_pos]
 
-        self.bet_vector = self.context2vector(bet_filtered, config)
+        self.bet_vector = self.context2vector(bet_filtered, config, language)
 
         bef_no_tags = [t[0] for t in self.bef_tags if t[0].lower() not in config.stopwords]
         aft_no_tags = [t[0] for t in self.aft_tags if t[0].lower() not in config.stopwords]
-        self.bef_vector = self.context2vector(bef_no_tags, config)
-        self.aft_vector = self.context2vector(aft_no_tags, config)
+        self.bef_vector = self.context2vector(bef_no_tags, config, language)
+        self.aft_vector = self.context2vector(aft_no_tags, config, language)
 
         return
 
     @staticmethod
-    def context2vector(tokens, config):
+    def context2vector(tokens, config, language):
         """
         token列表的word2vec值的加权平均
         :param tokens: 
         :param config: 
+        :param language: 
         :return: 
         """
         vector = zeros(config.vec_dim)
-        for token in tokens:
-            try:
-                vector += config.word2vec[token.strip()]
-            except KeyError:
-                continue
+        if language != "zh":
+            for token in tokens:
+                try:
+                    vector += config.word2vec[token.strip()]
+                except KeyError:
+                    continue
+        else:
+            for token in tokens:
+                if not isinstance(token, unicode):
+                    token = unicode(token, 'utf-8')
+
+                for single in token:
+                    try:
+                        vector += config.word2vec[single.strip()]
+                    except KeyError:
+                        continue
 
         return vector

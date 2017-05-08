@@ -71,8 +71,15 @@ class Config(object):
         self.wNeg = config['hyper_parameters']['wNeg']
         self.number_iterations = config['hyper_parameters']['number_iterations']
         self.min_pattern_support = config['hyper_parameters']['min_pattern_support']
+
+        # context 选择的token的数量
+        # 两个符合要求实体间的token在min_tokens_away-max_tokens_away之间
         self.max_tokens_away = config['hyper_parameters']['max_tokens_away']
         self.min_tokens_away = config['hyper_parameters']['min_tokens_away']
+        # 第一个实体之前的token选择最近的bef_token_nums
+        self.bef_token_nums = config['hyper_parameters']['bef_token_nums']
+        # 第二个实体之后的token选择最近的
+        self.aft_token_nums = config['hyper_parameters']['aft_token_nums']
 
         self.alpha = config['context_weight']['alpha']
         self.beta = config['context_weight']['beta']
@@ -83,16 +90,18 @@ class Config(object):
         self.similarity = config['similarity']['similarity']
         self.confidence = config['similarity']['confidence']
 
-        # 工程地质
+        # 工程地址
         self.project_path = os.path.dirname(os.path.dirname(__file__))
         self.word2vec_path = self.project_path + config["path"]["dirpath"] + config["path"]["word2vec"]
         self.sentences_path = self.project_path + config["path"]["dirpath"] + config["path"]["sentences"]
         self.processed_path = self.project_path + config["path"]["dirpath"] + config["path"]["processed_tuples"]
+        self.pattern_path = self.project_path + config['path']['dirpath'] + config['path']['pattern_path']
 
         # word2vec 模型导入
         self.word2vec = None
         self.vec_dim = None
-        self.read_word2vec()
+        w2v_format = config["hyper_parameters"]["word2vec_format"]
+        self.read_word2vec(w2v_format)
 
         # ReVerb词性抽取
         self.reverb = ReVerb()
@@ -100,10 +109,14 @@ class Config(object):
         # stopwords
         self.stopwords = self.load_stopwords('en')
 
-    def read_word2vec(self):
+    def read_word2vec(self, word_format):
         print "loading word2vec model ...\n"
-        self.word2vec = Word2Vec.load_word2vec_format(self.word2vec_path, binary=True)
-        self.vec_dim = self.word2vec.layer1_size
+        if word_format == "bin":
+            self.word2vec = Word2Vec.load_word2vec_format(self.word2vec_path, binary=True)
+            self.vec_dim = self.word2vec.layer1_size
+        else:
+            self.word2vec = Word2Vec.load(self.word2vec_path)
+            self.vec_dim = self.word2vec.layer1_size
         print self.vec_dim, "dimensions"
 
     @staticmethod

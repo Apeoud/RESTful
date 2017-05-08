@@ -25,7 +25,7 @@ class AUTORE(object):
         self.candidate_tuples = defaultdict(list)
         self.config = Config(config_file)
 
-    def extract_tuples(self, sentence_file, localsaved=True):
+    def extract_tuples(self, sentence_file, localsaved=False):
 
         if localsaved:
             # 先查找是否有提取出的用cPickle备份好的Tuple，如果有则从本地导入tuples，调试时使用能减少时间。
@@ -293,10 +293,10 @@ def main():
     sentence_ex = "<ORG>AOL</ORG> , which is based in <LOC>New York</LOC> but also has major operations " \
                   "in <LOC>Northern Virginia</LOC> , said it will take about $ 200 million in charges for " \
                   "severance and other costs related to the restructuring ."
-    re = AUTORE(config_file='parameter.json')
-    # re.bootstrap(
-    #     sentence_file='/Users/duanshangfu/PycharmProjects/RESTful/app/RelationExtraction/data/sentences_300k.txt')
-    re.load_model()
+    re = AUTORE(config_file=os.path.join(os.path.dirname(__file__), 'parameter.json'))
+    re.bootstrap(
+        sentence_file='/Users/duanshangfu/PycharmProjects/RESTful/app/RelationExtraction/data/sentences_zh_zgs.txt')
+    # re.load_model()
     result = re.score(sentence_ex)
     # re.dump_model()
     print result
